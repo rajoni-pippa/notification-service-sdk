@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>QBits SDK Test</title>
+    <style>
+      body {
+        font-family: monospace;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background: #0f0f0f;
+        color: #00ff00;
+      }
+
+      h2 {
+        color: #ffffff;
+      }
+
+      .log-box {
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 16px;
+        height: 300px;
+        overflow-y: auto;
+        margin: 16px 0;
+        font-size: 13px;
+      }
+
+      .log-item {
+        margin: 4px 0;
+      }
+
+      .log-item.success {
+        color: #00ff00;
+      }
+
+      .log-item.error {
+        color: #ff4444;
+      }
+
+      .log-item.info {
+        color: #4499ff;
+      }
+
+      .log-item.notify {
+        color: #ffaa00;
+        font-weight: bold;
+      }
+
+      input,
+      button {
+        padding: 8px 14px;
+        margin: 4px;
+        border-radius: 4px;
+        border: 1px solid #444;
+        background: #222;
+        color: #fff;
+        font-family: monospace;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #333;
+      }
+
+      .btn-green {
+        border-color: #00aa00;
+        color: #00ff00;
+      }
+
+      .btn-red {
+        border-color: #aa0000;
+        color: #ff4444;
+      }
+
+      .btn-blue {
+        border-color: #0044aa;
+        color: #4499ff;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>QBits Notify — SDK Test</h2>
+
+    <div>
+      <!--
+        এখানে আপনার actual values দিন।
+        api_key: আপনার DB তে customer এর api_key
+        user_id: যেকোনো number (test এর জন্য)
+    -->
+      <input
+        type="text"
+        id="apiKey"
+        value="ketE1bGgPmA3gBKZgbunZTWliz"
+        placeholder="api_key"
+        style="width: 200px"
+      />
+      <input
+        type="number"
+        id="userId"
+        value="6"
+        placeholder="user_id"
+        style="width: 80px"
+      />
+    </div>
+
+    <div style="margin-top: 10px">
+      <button class="btn-green" onclick="initSDK()">SDK Init</button>
+      <button class="btn-red" onclick="disconnectSDK()">Disconnect</button>
+      <button class="btn-blue" onclick="clearLogs()">Logs Clear</button>
+    </div>
+
+    <div class="log-box" id="logBox"></div>
+
+    <hr style="border-color: #333; margin: 20px 0" />
+
+    <h2>Manual Notification Test</h2>
+    <!-- <p style="color:#888; font-size:13px">
+        এই button টা আপনার notification service এ POST /notify <br>
+        SDK connected থাকলে notification আসবে।
+    </p> -->
+
+    <div>
+      <input
+        type="text"
+        id="notifyApiKey"
+        value="ketE1bGgPmA3gBKZgbunZTWliz"
+        placeholder="api_key"
+        style="width: 200px"
+      />
+      <input
+        type="number"
+        id="notifyUserId"
+        value="6"
+        placeholder="user_id"
+        style="width: 80px"
+      />
+      <input
+        type="text"
+        id="notifyMessage"
+        value="Test notification!"
+        placeholder="message"
+        style="width: 250px"
+      />
+    </div>
+    <div style="margin-top: 8px">
+      <button class="btn-blue" onclick="sendTestNotification()">
+        Notification
+      </button>
+    </div>
+
+    <!--
+    sdk.min.js → আপনার dist/ folder থেকে
+    অথবা CDN link বসান
+-->
+    <script src="./dist/sdk.min.js"></script>
+
+    <script>
+      // ─────────────────────────────────────────
+      // Log helper
+      // ─────────────────────────────────────────
+      function log(msg, type = "info") {
+        const box = document.getElementById("logBox");
+        const time = new Date().toLocaleTimeString();
+        const div = document.createElement("div");
+        div.className = `log-item ${type}`;
+        div.textContent = `[${time}] ${msg}`;
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+      }
+
+      function clearLogs() {
+        document.getElementById("logBox").innerHTML = "";
+      }
+
+      // ─────────────────────────────────────────
+      // SDK Init
+      // ─────────────────────────────────────────
+      async function initSDK() {
+        const apiKey = document.getElementById("apiKey").value;
+        const userId = parseInt(document.getElementById("userId").value);
+
+        log(`SDK init starting... apiKey=${apiKey}, userId=${userId}`, "info");
+
+        try {
+          await NotificationService.init({
+            apiKey: apiKey,
+            userId: userId,
+            onNotify: (data) => {
+              // ──────────────────────────────
+              // এখানে notification আসলে fire হবে
+              // ──────────────────────────────
+              log(`NOTIFICATION Come: ${data.short_message}`, "notify");
+              log(`Type: ${data.type}, ID: ${data.id}`, "notify");
+
+              // browser notification দেখাও (optional)
+              if (Notification.permission === "granted") {
+                new Notification("QBits Notification", {
+                  body: data.short_message,
+                });
+              }
+            },
+          });
+
+          log("SDK successfully connected!", "success");
+        } catch (err) {
+          log(`Error: ${err.message}`, "error");
+        }
+      }
+
+      // ─────────────────────────────────────────
+      // Disconnect
+      // ─────────────────────────────────────────
+      function disconnectSDK() {
+        NotificationService.disconnect();
+        log("SDK disconnected।", "error");
+      }
+
+      // ─────────────────────────────────────────
+      // Test notification পাঠাও
+      //
+      // এটা আপনার notification service এ
+      // POST /api/notify করবে।
+      // ─────────────────────────────────────────
+      async function sendTestNotification() {
+        const apiKey = document.getElementById("notifyApiKey").value;
+        const userId = parseInt(document.getElementById("notifyUserId").value);
+        const message = document.getElementById("notifyMessage").value;
+
+        log(`Notification send...`, "info");
+
+        try {
+          const res = await fetch(
+            "http://127.0.0.1:8000/api/v1/notification/send",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                apiKey: "ketE1bGgPmA3gBKZgbunZTWliz", // আপনার NotificationServiceTrait এ যেটা আছে
+                secretKey:
+                  "$2y$12$64C8Jq9cbINhzeIESnMbve/31vhJaLIn4mgc8snfXZLRAtzU7ZIF6", // সেটাই দিন
+              },
+              body: JSON.stringify({
+                module_name: "order",
+                recipients: [{ user_id: userId }],
+                dynamic_data: {
+                  short_message: message,
+                  channel: `qbits-${userId}`, // dash দিন
+                },
+              }),
+            },
+          );
+
+          const data = await res.json();
+          log(`Server response: ${JSON.stringify(data)}`, "success");
+        } catch (err) {
+          log(`Fetch error: ${err.message}`, "error");
+        }
+      }
+
+      // Browser notification permission
+      if ("Notification" in window) {
+        Notification.requestPermission();
+      }
+
+      log("Page loaded. SDK init.", "info");
+    </script>
+  </body>
+</html>
