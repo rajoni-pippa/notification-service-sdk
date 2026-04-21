@@ -1,6 +1,6 @@
 {
   "name": "notification-service",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Realtime in-app notification SDK for Notification Service",
   "main": "dist/sdk.esm.js",
   "module": "dist/sdk.esm.js",
