@@ -9,13 +9,13 @@ Realtime in-app notification SDK। It will work any kind of frontend.
 ### npm (React / Vue / Angular)
 
 ```bash
-npm install @rajoni/notification-service-sdk
+npm install @rajoni/notification-service-sdk@latest
 ```
 
 ### CDN (Blade / Django / Rails)
 
 ```html
-<script src="https://unpkg.com/@rajoni/notification-service-sdk@1.0.4/dist/sdk.min.js"></script>
+<script src="https://unpkg.com/@rajoni/notification-service-sdk@1.0.5/dist/sdk.min.js"></script>
 ```
 
 ---
@@ -91,7 +91,7 @@ onUnmounted(() => {
 
 ```html
 {% if user.is_authenticated %}
-<script src="https://unpkg.com/@rajoni/notification-service-sdk@1.0.4/dist/sdk.min.js"></script>
+<script src="https://unpkg.com/@rajoni/notification-service-sdk@1.0.5/dist/sdk.min.js"></script>
 <script>
   NotificationService.init({
       apiKey:   '{{ api_key }}',
