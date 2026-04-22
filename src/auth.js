@@ -1,5 +1,5 @@
 // const SAAS_URL = import.meta.env.VITE_SAAS_BASE_URL;
-const SAAS_URL = "http://127.0.0.1:8000/api";
+const SAAS_URL = "https://naas.api.pippasync.com/api";
 
 export async function fetchConfig(apiKey, userId) {
   const res = await fetch(

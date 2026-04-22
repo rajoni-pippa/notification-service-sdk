@@ -1,4 +1,4 @@
-# notification-service SDK
+# Notification-service SDK
 
 Realtime in-app notification SDK। It will work any kind of frontend.
 
