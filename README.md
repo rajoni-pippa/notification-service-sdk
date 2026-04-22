@@ -25,7 +25,7 @@ npm install @rajoni/notification-service-sdk@latest
 ### React
 
 ```jsx
-import NotificationService from "notification-service";
+import NotificationService from "@rajoni/notification-service-sdk";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -51,7 +51,7 @@ function App() {
 
 ```vue
 <script setup>
-import NotificationService from "notification-service";
+import NotificationService from "@rajoni/notification-service-sdk";
 import { onMounted, onUnmounted } from "vue";
 
 onMounted(() => {
